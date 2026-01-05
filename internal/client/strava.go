@@ -1,8 +1,8 @@
 package client
 
 import (
+	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 )
@@ -21,25 +21,30 @@ func NewClient(baseURL string, authToken string) *Client {
 	}
 }
 
-func (c *Client) GetCurrentAthlete() {
-	body, err := c.do("")
+//func (c *Client) GetCurrentAthlete() {
+//	body, err := c.do("")
+//	if err != nil {
+//		log.Fatalln(err)
+//	}
+//	sb := string(body)
+//	log.Printf(sb)
+//}
+
+func (c *Client) ListActivities(before int, after int) ([]Activity, error) {
+	resp, err := c.do(fmt.Sprintf("activities?before=%d&after%d=&per_page=10", before, after))
 	if err != nil {
 		log.Fatalln(err)
 	}
-	sb := string(body)
-	log.Printf(sb)
-}
 
-func (c *Client) ListActivities(before int, after int) {
-	body, err := c.do(fmt.Sprintf("activities?before=%d&after%d=&per_page=10", before, after))
-	if err != nil {
-		log.Fatalln(err)
+	var activities []Activity
+	if err := json.NewDecoder(resp.Body).Decode(&activities); err != nil {
+		return nil, err
 	}
-	sb := string(body)
-	log.Printf(sb)
+
+	return activities, nil
 }
 
-func (c *Client) do(url string) ([]byte, error) {
+func (c *Client) do(url string) (*http.Response, error) {
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", c.baseURL, url), nil)
 	if err != nil {
 		log.Fatalln(err)
@@ -49,8 +54,9 @@ func (c *Client) do(url string) ([]byte, error) {
 	resp, err := http.DefaultClient.Do(req)
 
 	if err != nil {
-		log.Fatalf("client: error making http request: %s\n", err)
+		fmt.Printf("Error fetching data %s \n", err)
+		return nil, err
 	}
 
-	return io.ReadAll(resp.Body)
+	return resp, nil
 }

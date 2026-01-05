@@ -12,7 +12,7 @@ var monthCmd = &cobra.Command{
 	Long:  "Visualize monthly stats",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("month called %t \n", shouldGetLast)
-		stravaClient.ListActivities(1767552000, 1766956800)
+		//stravaClient.ListActivities(1767552000, 1766956800)
 	},
 }
 

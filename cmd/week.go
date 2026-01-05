@@ -9,7 +9,7 @@ var weekCmd = &cobra.Command{
 	Short: "Visualize weekly stats",
 	Long:  "Visualize weekly stats",
 	Run: func(cmd *cobra.Command, args []string) {
-		stravaClient.ListActivities(1767552000, 1766956800)
+		statService.ListActivities(shouldGetLast)
 	},
 }
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gova/internal/client"
 	"gova/internal/config"
+	"gova/internal/service"
 	"log"
 	"os"
 
@@ -11,7 +12,7 @@ import (
 )
 
 var shouldGetLast bool
-var stravaClient *client.Client
+var statService *service.StatService
 
 var rootCmd = &cobra.Command{
 	Use:   "gova",
@@ -28,7 +29,8 @@ func Execute() {
 		log.Fatal(err)
 	}
 
-	stravaClient = client.NewClient(cfg.BaseURL, cfg.StravaToken)
+	stravaClient := client.NewClient(cfg.BaseURL, cfg.StravaToken)
+	statService = service.NewStatService(stravaClient)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
