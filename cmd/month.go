@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"gova/internals/client"
 
 	"github.com/spf13/cobra"
 )
@@ -11,7 +12,8 @@ var monthCmd = &cobra.Command{
 	Short: "Visualize monthly stats",
 	Long:  "Visualize monthly stats",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("month called %t", shouldGetLast)
+		fmt.Printf("month called %t \n", shouldGetLast)
+		client.GetActivityList()
 	},
 }
 
