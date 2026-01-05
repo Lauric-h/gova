@@ -9,4 +9,5 @@ type ActivitySummary struct {
 	SportType     SportType
 	StartDay      time.Time
 	EndDay        time.Time
+	Count         int
 }

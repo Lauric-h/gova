@@ -12,7 +12,16 @@ var weekCmd = &cobra.Command{
 	Long:  "Visualize weekly stats",
 	Run: func(cmd *cobra.Command, args []string) {
 		activitiesSummary, _ := statService.ListActivities(shouldGetLast)
-		fmt.Println(activitiesSummary)
+
+		for _, activity := range activitiesSummary {
+			fmt.Printf("Activité %s (%d): %d km, %d secondes, %dm de dénivelé positif\n",
+				activity.SportType.String(),
+				activity.Count,
+				activity.TotalDistance,
+				activity.TotalDuration,
+				activity.TotalAscent,
+			)
+		}
 	},
 }
 

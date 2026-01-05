@@ -58,5 +58,7 @@ func (c *Client) do(url string) (*http.Response, error) {
 		return nil, err
 	}
 
+	// TODO CHECK RESPONSE CODE
+
 	return resp, nil
 }
