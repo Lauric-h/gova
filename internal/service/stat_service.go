@@ -35,6 +35,8 @@ func (s *StatService) ListActivities(shouldGetLast bool) (map[string]domain.Acti
 			entry.TotalDuration += act.Duration
 			entry.Count++
 
+			formattedActivities[sportType.String()] = entry
+
 			continue
 		}
 
