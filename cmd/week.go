@@ -1,9 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-	"gova/internals/client"
-
 	"github.com/spf13/cobra"
 )
 
@@ -12,8 +9,7 @@ var weekCmd = &cobra.Command{
 	Short: "Visualize weekly stats",
 	Long:  "Visualize weekly stats",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("week called %t \n", shouldGetLast)
-		client.GetCurrentAthlete()
+		stravaClient.ListActivities(1767552000, 1766956800)
 	},
 }
 
