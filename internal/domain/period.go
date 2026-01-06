@@ -12,7 +12,7 @@ const (
 	PeriodMonth = "month"
 )
 
-func CreateWeek(ShouldGetLast bool) Period {
+func CreateWeek(shouldGetLast bool) Period {
 	now := time.Now()
 
 	weekday := int(now.Weekday())
@@ -21,7 +21,7 @@ func CreateWeek(ShouldGetLast bool) Period {
 	}
 
 	start := now.AddDate(0, 0, -(weekday - 1))
-	if ShouldGetLast {
+	if shouldGetLast {
 		start = start.AddDate(0, 0, -7)
 	}
 
@@ -36,6 +36,21 @@ func CreateWeek(ShouldGetLast bool) Period {
 	}
 }
 
-func CreateMonth(ShouldGetLast bool) Period {
-	return Period{}
+func CreateMonth(shouldGetLast bool) Period {
+	now := time.Now()
+
+	if shouldGetLast {
+		now = now.AddDate(0, -1, 0)
+	}
+
+	start := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+
+	nextMonth := now.AddDate(0, 1, 0)
+	nextMonthFirstDay := time.Date(nextMonth.Year(), nextMonth.Month(), 1, 0, 0, 0, 0, nextMonth.Location())
+	end := nextMonthFirstDay.Add(-time.Second)
+
+	return Period{
+		StartDay: start,
+		EndDay:   end,
+	}
 }
