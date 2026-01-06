@@ -30,8 +30,8 @@ func NewClient(baseURL string, authToken string) *Client {
 //	log.Printf(sb)
 //}
 
-func (c *Client) ListActivities(before int, after int) ([]Activity, error) {
-	resp, err := c.do(fmt.Sprintf("activities?before=%d&after%d=&per_page=10", before, after))
+func (c *Client) ListActivities(before int64, after int64) ([]Activity, error) {
+	resp, err := c.do(fmt.Sprintf("activities?before=%d&after=%d&per_page=10", before, after))
 	if err != nil {
 		log.Fatalln(err)
 	}

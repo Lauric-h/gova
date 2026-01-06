@@ -12,7 +12,8 @@ var monthCmd = &cobra.Command{
 	Long:  "Visualize monthly stats",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("month called %t \n", shouldGetLast)
-		statService.ListActivities(shouldGetLast)
+		//activities, _ := statService.ListActivities(shouldGetLast, domain.PeriodMonth)
+		//fmt.Println(activities)
 	},
 }
 

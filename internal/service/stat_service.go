@@ -14,8 +14,10 @@ func NewStatService(client *client.Client) *StatService {
 	return &StatService{Client: client}
 }
 
-func (s *StatService) ListActivities(shouldGetLast bool) (map[string]domain.ActivitySummary, error) {
-	activities, err := s.Client.ListActivities(1767552000, 1766956800)
+func (s *StatService) ListActivities(period domain.Period) (map[string]domain.ActivitySummary, error) {
+	//activities, err := s.Client.ListActivities(1767552000, 1766956800)
+	activities, err := s.Client.ListActivities(period.EndDay.Unix(), period.StartDay.Unix())
+
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
