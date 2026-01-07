@@ -6,8 +6,10 @@ import (
 )
 
 type Config struct {
-	StravaToken string
-	BaseURL     string
+	StravaToken  string
+	BaseURL      string
+	ClientId     string
+	ClientSecret string
 }
 
 func Load() (*Config, error) {
@@ -21,5 +23,5 @@ func Load() (*Config, error) {
 		return nil, errors.New("BASE_URL environment variable not set")
 	}
 
-	return &Config{token, baseURL}, nil
+	return &Config{token, baseURL, "", ""}, nil
 }

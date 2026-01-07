@@ -2,15 +2,15 @@ package service
 
 import (
 	"fmt"
-	"gova/internal/client"
 	"gova/internal/domain"
+	"gova/internal/strava"
 )
 
 type StatService struct {
-	Client *client.Client
+	Client *strava.Client
 }
 
-func NewStatService(client *client.Client) *StatService {
+func NewStatService(client *strava.Client) *StatService {
 	return &StatService{Client: client}
 }
 

@@ -1,4 +1,4 @@
-package client
+package strava
 
 import (
 	"encoding/json"
