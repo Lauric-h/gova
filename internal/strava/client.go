@@ -61,3 +61,7 @@ func (c *Client) do(url string) (*http.Response, error) {
 
 	return resp, nil
 }
+
+func (c *Client) ExchangeAuth() {
+	req, err := http.NewRequest(http.MethodGet)
+}
