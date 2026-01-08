@@ -10,13 +10,13 @@ import (
 
 type Client struct {
 	httpClient *http.Client
-	authToken  string
+	cfg        *config.Config
 }
 
-func NewClient(baseURL string, authToken string) *Client {
+func NewClient(cfg *config.Config) *Client {
 	return &Client{
 		httpClient: &http.Client{},
-		authToken:  authToken,
+		cfg:        cfg,
 	}
 }
 
@@ -49,7 +49,7 @@ func (c *Client) do(url string) (*http.Response, error) {
 		log.Fatalln(err)
 	}
 
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.authToken))
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.cfg.StravaToken))
 	resp, err := http.DefaultClient.Do(req)
 
 	if err != nil {

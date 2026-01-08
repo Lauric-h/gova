@@ -31,7 +31,7 @@ func Execute() {
 		log.Fatal(err)
 	}
 
-	stravaClient := strava.NewClient(cfg.StravaToken, cfg.ClientId)
+	stravaClient := strava.NewClient(cfg)
 	statService = service.NewStatService(stravaClient)
 
 	if err := rootCmd.Execute(); err != nil {
