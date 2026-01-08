@@ -3,20 +3,19 @@ package strava
 import (
 	"encoding/json"
 	"fmt"
+	"gova/internal/config"
 	"log"
 	"net/http"
 )
 
 type Client struct {
 	httpClient *http.Client
-	baseURL    string
 	authToken  string
 }
 
 func NewClient(baseURL string, authToken string) *Client {
 	return &Client{
 		httpClient: &http.Client{},
-		baseURL:    baseURL,
 		authToken:  authToken,
 	}
 }
@@ -45,7 +44,7 @@ func (c *Client) ListActivities(before int64, after int64) ([]Activity, error) {
 }
 
 func (c *Client) do(url string) (*http.Response, error) {
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", c.baseURL, url), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", config.StravaBaseURL, url), nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
