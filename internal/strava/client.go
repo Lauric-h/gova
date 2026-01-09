@@ -4,8 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"gova/internal/config"
+	"io"
 	"log"
 	"net/http"
+	url2 "net/url"
+)
+
+const (
+	StravaAuthURL  = "https://www.strava.com/oauth/authorize"
+	StravaTokenURL = "https://www.strava.com/oauth/token"
+	StravaBaseURL  = "https://www.strava.com/api/v3"
 )
 
 type Client struct {
@@ -18,6 +26,29 @@ func NewClient(cfg *config.Config) *Client {
 		httpClient: &http.Client{},
 		cfg:        cfg,
 	}
+}
+
+func (c *Client) BuildAuthURL() string {
+	params := url2.Values{
+		"client_id":       {c.cfg.ClientId},
+		"response_type":   {"code"},
+		"redirect_uri":    {c.cfg.AuthRedirectURI},
+		"approval_prompt": {"force"},
+		"scope":           {"activity:read_all"},
+	}
+
+	return StravaAuthURL + "?" + params.Encode()
+}
+
+func (c *Client) buildTokenURL(code string) string {
+	params := url2.Values{
+		"client_id":     {c.cfg.ClientId},
+		"client_secret": {c.cfg.ClientSecret},
+		"code":          {code},
+		"grant_type":    {"authorization_code"},
+	}
+
+	return StravaTokenURL + "?" + params.Encode()
 }
 
 //func (c *Client) GetCurrentAthlete() {
@@ -44,7 +75,7 @@ func (c *Client) ListActivities(before int64, after int64) ([]Activity, error) {
 }
 
 func (c *Client) do(url string) (*http.Response, error) {
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", config.StravaBaseURL, url), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", StravaBaseURL, url), nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -62,6 +93,22 @@ func (c *Client) do(url string) (*http.Response, error) {
 	return resp, nil
 }
 
-func (c *Client) ExchangeAuth() {
-	req, err := http.NewRequest(http.MethodGet)
+func (c *Client) ExchangeAuth(code string) TokenResponse {
+	req, err := http.Post(c.buildTokenURL(code), "application/json", nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer req.Body.Close()
+
+	body, err := io.ReadAll(req.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var resp TokenResponse
+	if err := json.Unmarshal(body, &resp); err != nil {
+		fmt.Println(err)
+	}
+
+	return resp
 }

@@ -15,7 +15,7 @@ var loginCmd = &cobra.Command{
 		fmt.Println("Login called")
 		fmt.Println("Checking for config file...")
 
-		loginUrl := cfg.BuildAuthURL()
+		loginUrl := stravaClient.BuildAuthURL()
 
 		fmt.Println("Open this URL in your browser to login to Strava", loginUrl)
 		err := exec.Command("open", loginUrl).Start()
@@ -26,9 +26,9 @@ var loginCmd = &cobra.Command{
 		// -> -> User does not click on accept -> abort
 		// -> -> User clicks on accept
 		// -> -> -> Get code from browser
-		// -> -> -> POST to exchange code for token
-		// -> -> -> No right scope -> abort
-		// -> -> -> Store token + refresh token + exp date in config file
+		code := "todo"
+		authService.GetTokenFromCode(code)
+
 		// -> -> -> -> close browser tab
 		// SUCCESS
 	},

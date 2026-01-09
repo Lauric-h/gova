@@ -13,7 +13,9 @@ import (
 
 var shouldGetLast bool
 var statService *service.StatService
+var authService *service.AuthService
 var cfg *config.Config
+var stravaClient *strava.Client
 
 var rootCmd = &cobra.Command{
 	Use:   "gova",
@@ -31,7 +33,8 @@ func Execute() {
 		log.Fatal(err)
 	}
 
-	stravaClient := strava.NewClient(cfg)
+	stravaClient = strava.NewClient(cfg)
+	authService = service.NewAuthService(stravaClient)
 	statService = service.NewStatService(stravaClient)
 
 	if err := rootCmd.Execute(); err != nil {
