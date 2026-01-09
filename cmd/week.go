@@ -11,9 +11,21 @@ var weekCmd = &cobra.Command{
 	Use:   "week",
 	Short: "Visualize weekly stats",
 	Long:  "Visualize weekly stats",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if appCtx == nil || appCtx.StatService == nil {
+			return fmt.Errorf("application not initialized, try to login again")
+		}
+
+		shouldGetLast, err := cmd.Flags().GetBool("last")
+		if err != nil {
+			return err
+		}
+
 		period := domain.CreateWeek(shouldGetLast)
-		activitiesSummary, _ := statService.ListActivities(period)
+		activitiesSummary, err := appCtx.StatService.ListActivities(period)
+		if err != nil {
+			return err
+		}
 
 		fmt.Println(period.StartDay, "à", period.EndDay)
 		for _, activity := range activitiesSummary {
@@ -25,10 +37,12 @@ var weekCmd = &cobra.Command{
 				activity.TotalAscent,
 			)
 		}
+
+		return nil
 	},
 }
 
 func init() {
-	weekCmd.PersistentFlags().BoolVarP(&shouldGetLast, "last", "l", false, "Get last weekly stats")
+	weekCmd.Flags().BoolP("last", "l", false, "Get last week's stats")
 	rootCmd.AddCommand(weekCmd)
 }

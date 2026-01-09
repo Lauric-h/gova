@@ -1,4 +1,4 @@
-package strava
+package core
 
 type TokenResponse struct {
 	RefreshToken string `json:"refresh_token"`

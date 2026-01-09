@@ -3,14 +3,14 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"gova/internal/strava"
+	"gova/internal/core"
 	"os"
 	"path/filepath"
 	"time"
 )
 
 type AuthService struct {
-	Client *strava.Client
+	oauthClient core.OauthClient
 }
 
 type Credentials struct {
@@ -19,12 +19,12 @@ type Credentials struct {
 	ExpiresAt    time.Time `json:"expires_at"`
 }
 
-func NewAuthService(client *strava.Client) *AuthService {
+func NewAuthService(client core.OauthClient) *AuthService {
 	return &AuthService{client}
 }
 
 func (s *AuthService) GetTokenFromCode(code string) error {
-	tokenResponse := s.Client.ExchangeAuth(code)
+	tokenResponse := s.oauthClient.ExchangeAuth(code)
 
 	if err := s.storeToken(tokenResponse.AccessToken, tokenResponse.RefreshToken, tokenResponse.ExpiresAt); err != nil {
 		return fmt.Errorf("failed to store token: %w", err)

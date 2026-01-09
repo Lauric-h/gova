@@ -11,7 +11,11 @@ var loginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "Login to Strava",
 	Long:  "Login to Strava",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if appCtx == nil || appCtx.AuthService == nil {
+			return fmt.Errorf("strava Auth Service is not initialized")
+		}
+
 		fmt.Println("Login called")
 		fmt.Println("Checking for config file...")
 
@@ -27,7 +31,12 @@ var loginCmd = &cobra.Command{
 		// -> -> User clicks on accept
 		// -> -> -> Get code from browser
 		code := "todo"
-		authService.GetTokenFromCode(code)
+		err = appCtx.AuthService.GetTokenFromCode(code)
+		if err != nil {
+			return fmt.Errorf("could not get token from code: %s", err.Error())
+		}
+
+		return nil
 
 		// -> -> -> -> close browser tab
 		// SUCCESS

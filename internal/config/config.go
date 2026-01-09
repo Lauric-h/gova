@@ -13,6 +13,7 @@ type Config struct {
 }
 
 func Load() (*Config, error) {
+	// TODO REMOVE
 	token := os.Getenv("STRAVA_AUTH_TOKEN")
 	if token == "" {
 		return nil, errors.New("STRAVA_AUTH_TOKEN environment variable not set")

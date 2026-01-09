@@ -1,4 +1,4 @@
-package strava
+package core
 
 type Activity struct {
 	Distance  float64 `json:"distance"`
