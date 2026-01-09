@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"gova/internal/config"
 	"gova/internal/service"
@@ -17,7 +18,7 @@ type AppContext struct {
 	AuthService  *service.AuthService
 }
 
-var appCtx *AppContext
+const appCtxKey = "appCtx"
 
 var rootCmd = &cobra.Command{
 	Use:   "gova",
@@ -31,12 +32,14 @@ var rootCmd = &cobra.Command{
 
 		oAuthClient := strava.NewOauthClient(cfg)
 		stravaClient := strava.NewClient(cfg)
-		appCtx = &AppContext{
+		appCtx := &AppContext{
 			Config:       cfg,
 			AuthService:  service.NewAuthService(oAuthClient),
 			StravaClient: stravaClient,
 			StatService:  service.NewStatService(stravaClient),
 		}
+
+		cmd.SetContext(context.WithValue(cmd.Context(), appCtxKey, appCtx))
 
 		return nil
 	},

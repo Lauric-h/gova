@@ -12,7 +12,17 @@ var weekCmd = &cobra.Command{
 	Short: "Visualize weekly stats",
 	Long:  "Visualize weekly stats",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if appCtx == nil || appCtx.StatService == nil {
+		ctx := cmd.Context().Value(appCtxKey)
+		if ctx == nil {
+			return fmt.Errorf("ctx is nil")
+		}
+
+		appCtx, ok := ctx.(*AppContext)
+		if !ok {
+			return fmt.Errorf("invalid appContext")
+		}
+
+		if appCtx.StatService == nil {
 			return fmt.Errorf("application not initialized, try to login again")
 		}
 

@@ -7,15 +7,16 @@ import (
 	"gova/internal/core"
 	"io"
 	"net/http"
+	url2 "net/url"
+)
+
+const (
+	AuthURL  = "https://www.strava.com/oauth/authorize"
+	TokenURL = "https://www.strava.com/oauth/token"
 )
 
 type OauthClient struct {
 	cfg *config.Config
-}
-
-func (c *OauthClient) BuildAuthURL() string {
-	//TODO implement me
-	panic("implement me")
 }
 
 func NewOauthClient(cfg *config.Config) *OauthClient {
@@ -23,7 +24,7 @@ func NewOauthClient(cfg *config.Config) *OauthClient {
 }
 
 func (c *OauthClient) ExchangeToken(code string) (*core.TokenResponse, error) {
-	resp, err := http.Post(c.buildTokenURL(code), "application/json", nil)
+	resp, err := http.Post(c.BuildTokenURL(code), "", nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to exchange auth token: %w", err)
 	}
@@ -40,4 +41,27 @@ func (c *OauthClient) ExchangeToken(code string) (*core.TokenResponse, error) {
 	}
 
 	return &token, nil
+}
+
+func (c *OauthClient) BuildAuthURL() string {
+	params := url2.Values{
+		"client_id":       {c.cfg.ClientId},
+		"response_type":   {"code"},
+		"redirect_uri":    {c.cfg.AuthRedirectURI},
+		"approval_prompt": {"force"},
+		"scope":           {"activity:read_all"},
+	}
+
+	return AuthURL + "?" + params.Encode()
+}
+
+func (c *OauthClient) BuildTokenURL(code string) string {
+	params := url2.Values{
+		"client_id":     {c.cfg.ClientId},
+		"client_secret": {c.cfg.ClientSecret},
+		"code":          {code},
+		"grant_type":    {"authorization_code"},
+	}
+
+	return TokenURL + "?" + params.Encode()
 }

@@ -12,14 +12,24 @@ var loginCmd = &cobra.Command{
 	Short: "Login to Strava",
 	Long:  "Login to Strava",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if appCtx == nil || appCtx.AuthService == nil {
+		ctx := cmd.Context().Value(appCtxKey)
+		if ctx == nil {
+			return fmt.Errorf("ctx is nil")
+		}
+
+		appCtx, ok := ctx.(*AppContext)
+		if !ok {
+			return fmt.Errorf("invalid appContext")
+		}
+
+		if appCtx.AuthService == nil {
 			return fmt.Errorf("strava Auth Service is not initialized")
 		}
 
 		fmt.Println("Login called")
 		fmt.Println("Checking for config file...")
 
-		loginUrl := stravaClient.BuildAuthURL()
+		loginUrl := appCtx.AuthService.BuildLoginUrl()
 
 		fmt.Println("Open this URL in your browser to login to Strava", loginUrl)
 		err := exec.Command("open", loginUrl).Start()

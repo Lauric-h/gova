@@ -24,7 +24,10 @@ func NewAuthService(client core.OauthClient) *AuthService {
 }
 
 func (s *AuthService) GetTokenFromCode(code string) error {
-	tokenResponse := s.oauthClient.ExchangeAuth(code)
+	tokenResponse, err := s.oauthClient.ExchangeToken(code)
+	if err != nil {
+		return fmt.Errorf("failed to exchange auth token, code: %s, error: %s", code, err.Error())
+	}
 
 	if err := s.storeToken(tokenResponse.AccessToken, tokenResponse.RefreshToken, tokenResponse.ExpiresAt); err != nil {
 		return fmt.Errorf("failed to store token: %w", err)
@@ -64,4 +67,8 @@ func (s *AuthService) storeToken(accessToken string, refreshToken string, expire
 	}
 
 	return nil
+}
+
+func (s *AuthService) BuildLoginUrl() string {
+	return s.oauthClient.BuildAuthURL()
 }

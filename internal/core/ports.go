@@ -2,6 +2,7 @@ package core
 
 type OauthClient interface {
 	BuildAuthURL() string
+	BuildTokenURL(code string) string
 	ExchangeToken(string) (*TokenResponse, error)
 }
 

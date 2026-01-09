@@ -7,13 +7,10 @@ import (
 	"gova/internal/core"
 	"io"
 	"net/http"
-	url2 "net/url"
 )
 
 const (
-	StravaAuthURL  = "https://www.strava.com/oauth/authorize"
-	StravaTokenURL = "https://www.strava.com/oauth/token"
-	StravaBaseURL  = "https://www.strava.com/api/v3"
+	BaseURL = "https://www.strava.com/api/v3"
 )
 
 type Client struct {
@@ -26,29 +23,6 @@ func NewClient(cfg *config.Config) *Client {
 		httpClient: &http.Client{},
 		cfg:        cfg,
 	}
-}
-
-func (c *Client) BuildAuthURL() string {
-	params := url2.Values{
-		"client_id":       {c.cfg.ClientId},
-		"response_type":   {"code"},
-		"redirect_uri":    {c.cfg.AuthRedirectURI},
-		"approval_prompt": {"force"},
-		"scope":           {"activity:read_all"},
-	}
-
-	return StravaAuthURL + "?" + params.Encode()
-}
-
-func (c *Client) buildTokenURL(code string) string {
-	params := url2.Values{
-		"client_id":     {c.cfg.ClientId},
-		"client_secret": {c.cfg.ClientSecret},
-		"code":          {code},
-		"grant_type":    {"authorization_code"},
-	}
-
-	return StravaTokenURL + "?" + params.Encode()
 }
 
 //func (c *Client) GetCurrentAthlete() {
@@ -76,7 +50,7 @@ func (c *Client) ListActivities(before int64, after int64) ([]core.Activity, err
 }
 
 func (c *Client) do(url string) (*http.Response, error) {
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", StravaBaseURL, url), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", BaseURL, url), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
