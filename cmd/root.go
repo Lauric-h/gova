@@ -31,10 +31,12 @@ var rootCmd = &cobra.Command{
 		}
 
 		oAuthClient := strava.NewOauthClient(cfg)
-		stravaClient := strava.NewClient(cfg)
+		authService := service.NewAuthService(oAuthClient)
+
+		stravaClient := strava.NewClient(cfg, authService)
 		appCtx := &AppContext{
 			Config:       cfg,
-			AuthService:  service.NewAuthService(oAuthClient),
+			AuthService:  authService,
 			StravaClient: stravaClient,
 			StatService:  service.NewStatService(stravaClient),
 		}

@@ -15,11 +15,6 @@ const (
 	TokenURL = "https://www.strava.com/oauth/token"
 )
 
-type OAuthResult struct {
-	Code  string
-	Error error
-}
-
 type OauthClient struct {
 	cfg *config.Config
 }

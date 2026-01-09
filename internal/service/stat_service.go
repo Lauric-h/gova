@@ -2,15 +2,15 @@ package service
 
 import (
 	"fmt"
+	"gova/internal/core"
 	"gova/internal/domain"
-	"gova/internal/strava"
 )
 
 type StatService struct {
-	Client *strava.Client
+	Client core.ApiClient
 }
 
-func NewStatService(client *strava.Client) *StatService {
+func NewStatService(client core.ApiClient) *StatService {
 	return &StatService{Client: client}
 }
 
@@ -32,7 +32,7 @@ func (s *StatService) ListActivities(period domain.Period) (map[string]domain.Ac
 		}
 
 		if entry, ok := formattedActivities[sportType.String()]; ok {
-			entry.TotalDistance += int(act.Distance)
+			entry.TotalDistance += float32(act.Distance)
 			entry.TotalAscent += int(act.Ascent)
 			entry.TotalDuration += act.Duration
 			entry.Count++
@@ -43,9 +43,9 @@ func (s *StatService) ListActivities(period domain.Period) (map[string]domain.Ac
 		}
 
 		formattedActivities[sportType.String()] = domain.ActivitySummary{
-			TotalDistance: int(act.Distance),
+			TotalDistance: float32(act.Distance),
 			TotalAscent:   int(act.Ascent),
-			TotalDuration: int(act.Duration),
+			TotalDuration: act.Duration,
 			SportType:     sportType,
 			Count:         1,
 		}

@@ -37,13 +37,13 @@ var weekCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Println(period.StartDay, "à", period.EndDay)
+		fmt.Println("Du", period.StartDay.Format("02/01/2006"), "au", period.EndDay.Format("02/01/2006"))
 		for _, activity := range activitiesSummary {
-			fmt.Printf("Activité %s (%d): %d km, %d secondes, %dm de dénivelé positif\n",
+			fmt.Printf("Activité %s (%d): %.1f km, %.1fh, %dm de dénivelé positif\n",
 				activity.SportType.String(),
 				activity.Count,
-				activity.TotalDistance,
-				activity.TotalDuration,
+				activity.GetDistanceInKm(),
+				activity.GetDurationInHours(),
 				activity.TotalAscent,
 			)
 		}

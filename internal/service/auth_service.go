@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"gova/internal/core"
-	"gova/internal/strava"
 	"net/http"
 	"os"
 	"os/exec"
@@ -22,8 +21,51 @@ type Credentials struct {
 	ExpiresAt    time.Time `json:"expires_at"`
 }
 
+type OAuthResult struct {
+	Code  string
+	Error error
+}
+
 func NewAuthService(client core.OauthClient) *AuthService {
 	return &AuthService{client}
+}
+
+func (s *AuthService) GetAccessToken() (string, error) {
+	token, err := s.GetCredentials()
+	if err != nil || token.AccessToken == "" {
+		return "", err
+	}
+
+	return token.AccessToken, nil
+}
+
+func (s *AuthService) GetCredentials() (*Credentials, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get home directory: %w", err)
+	}
+
+	filePath := filepath.Join(homeDir, ".config", "gova", "credentials.json")
+	j, err := os.Open(filePath)
+	if j == nil || err != nil {
+		return nil, fmt.Errorf("failed to find credentials file")
+	}
+	defer j.Close()
+
+	var credentials Credentials
+	if err := json.NewDecoder(j).Decode(&credentials); err != nil {
+		return nil, fmt.Errorf("failed to parse credentials file")
+	}
+
+	if credentials.AccessToken == "" || credentials.RefreshToken == "" {
+		return nil, fmt.Errorf("invalid credentials file")
+	}
+
+	if credentials.ExpiresAt.Before(time.Now()) {
+		// Refresh Token
+	}
+
+	return &credentials, nil
 }
 
 func (s *AuthService) GetTokenFromCode(code string) error {
@@ -76,8 +118,8 @@ func (s *AuthService) BuildLoginUrl() string {
 	return s.oauthClient.BuildAuthURL()
 }
 
-func (s *AuthService) StartOAuthFlow() (*strava.OAuthResult, error) {
-	resultChan := make(chan strava.OAuthResult, 1)
+func (s *AuthService) StartOAuthFlow() (*OAuthResult, error) {
+	resultChan := make(chan OAuthResult, 1)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/exchange_token", func(w http.ResponseWriter, r *http.Request) {
@@ -95,7 +137,7 @@ func (s *AuthService) StartOAuthFlow() (*strava.OAuthResult, error) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("Authentication successful, you can close this window."))
 
-		resultChan <- strava.OAuthResult{Code: code, Error: nil}
+		resultChan <- OAuthResult{Code: code, Error: nil}
 	})
 
 	server := &http.Server{Addr: ":8085", Handler: mux}

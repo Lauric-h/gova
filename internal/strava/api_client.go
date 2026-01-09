@@ -14,14 +14,16 @@ const (
 )
 
 type Client struct {
-	httpClient *http.Client
-	cfg        *config.Config
+	httpClient    *http.Client
+	cfg           *config.Config
+	tokenProvider core.TokenProvider
 }
 
-func NewClient(cfg *config.Config) *Client {
+func NewClient(cfg *config.Config, t core.TokenProvider) *Client {
 	return &Client{
-		httpClient: &http.Client{},
-		cfg:        cfg,
+		httpClient:    &http.Client{},
+		cfg:           cfg,
+		tokenProvider: t,
 	}
 }
 
@@ -50,12 +52,17 @@ func (c *Client) ListActivities(before int64, after int64) ([]core.Activity, err
 }
 
 func (c *Client) do(url string) (*http.Response, error) {
+	token, err := c.tokenProvider.GetAccessToken()
+	if err != nil || token == "" {
+		return nil, fmt.Errorf("failed to get credentials: %w", err)
+	}
+
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", BaseURL, url), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.cfg.StravaToken))
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute request: %w", err)

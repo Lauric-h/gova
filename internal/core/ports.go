@@ -6,5 +6,9 @@ type OauthClient interface {
 }
 
 type ApiClient interface {
-	ListActivities(before, after int64) ([]Activity, error)
+	ListActivities(before int64, after int64) ([]Activity, error)
+}
+
+type TokenProvider interface {
+	GetAccessToken() (string, error)
 }
