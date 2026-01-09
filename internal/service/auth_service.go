@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"gova/internal/core"
+	"gova/internal/strava"
+	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"time"
 )
@@ -71,4 +74,46 @@ func (s *AuthService) storeToken(accessToken string, refreshToken string, expire
 
 func (s *AuthService) BuildLoginUrl() string {
 	return s.oauthClient.BuildAuthURL()
+}
+
+func (s *AuthService) StartOAuthFlow() (*strava.OAuthResult, error) {
+	resultChan := make(chan strava.OAuthResult, 1)
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/exchange_token", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		code := r.URL.Query().Get("code")
+		if code == "" {
+			http.Error(w, "code is required", http.StatusBadRequest)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("Authentication successful, you can close this window."))
+
+		resultChan <- strava.OAuthResult{Code: code, Error: nil}
+	})
+
+	server := &http.Server{Addr: ":8085", Handler: mux}
+
+	err := exec.Command("open", s.BuildLoginUrl()).Start()
+	if err != nil {
+		fmt.Println("Could not open browser", err.Error())
+	}
+
+	go func() {
+		_ = server.ListenAndServe()
+	}()
+	defer server.Close()
+
+	select {
+	case result := <-resultChan:
+		return &result, nil
+	case <-time.After(time.Minute * 3):
+		return nil, fmt.Errorf("oauth timeout")
+	}
 }

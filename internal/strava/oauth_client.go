@@ -15,6 +15,11 @@ const (
 	TokenURL = "https://www.strava.com/oauth/token"
 )
 
+type OAuthResult struct {
+	Code  string
+	Error error
+}
+
 type OauthClient struct {
 	cfg *config.Config
 }
@@ -24,7 +29,13 @@ func NewOauthClient(cfg *config.Config) *OauthClient {
 }
 
 func (c *OauthClient) ExchangeToken(code string) (*core.TokenResponse, error) {
-	resp, err := http.Post(c.BuildTokenURL(code), "", nil)
+	data := url2.Values{}
+	data.Set("client_id", c.cfg.ClientId)
+	data.Set("client_secret", c.cfg.ClientSecret)
+	data.Set("code", code)
+	data.Set("grant_type", "authorization_code")
+
+	resp, err := http.PostForm(TokenURL, data)
 	if err != nil {
 		return nil, fmt.Errorf("failed to exchange auth token: %w", err)
 	}
@@ -53,15 +64,4 @@ func (c *OauthClient) BuildAuthURL() string {
 	}
 
 	return AuthURL + "?" + params.Encode()
-}
-
-func (c *OauthClient) BuildTokenURL(code string) string {
-	params := url2.Values{
-		"client_id":     {c.cfg.ClientId},
-		"client_secret": {c.cfg.ClientSecret},
-		"code":          {code},
-		"grant_type":    {"authorization_code"},
-	}
-
-	return TokenURL + "?" + params.Encode()
 }

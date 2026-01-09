@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os/exec"
 
 	"github.com/spf13/cobra"
 )
@@ -29,27 +28,20 @@ var loginCmd = &cobra.Command{
 		fmt.Println("Login called")
 		fmt.Println("Checking for config file...")
 
+		// Start HTTP Server
 		loginUrl := appCtx.AuthService.BuildLoginUrl()
-
 		fmt.Println("Open this URL in your browser to login to Strava", loginUrl)
-		err := exec.Command("open", loginUrl).Start()
+		oAuthResult, err := appCtx.AuthService.StartOAuthFlow()
 		if err != nil {
-			fmt.Println("Could not open browser", err.Error())
+			return err
 		}
 
-		// -> -> User does not click on accept -> abort
-		// -> -> User clicks on accept
-		// -> -> -> Get code from browser
-		code := "todo"
-		err = appCtx.AuthService.GetTokenFromCode(code)
+		err = appCtx.AuthService.GetTokenFromCode(oAuthResult.Code)
 		if err != nil {
 			return fmt.Errorf("could not get token from code: %s", err.Error())
 		}
 
 		return nil
-
-		// -> -> -> -> close browser tab
-		// SUCCESS
 	},
 }
 
