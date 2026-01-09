@@ -63,12 +63,13 @@ func (c *Client) buildTokenURL(code string) string {
 func (c *Client) ListActivities(before int64, after int64) ([]Activity, error) {
 	resp, err := c.do(fmt.Sprintf("activities?before=%d&after=%d&per_page=10", before, after))
 	if err != nil {
-		log.Fatalln(err)
+		return nil, fmt.Errorf("failed to fetch activities: %w", err)
 	}
+	defer resp.Body.Close()
 
 	var activities []Activity
 	if err := json.NewDecoder(resp.Body).Decode(&activities); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to decode activities: %w", err)
 	}
 
 	return activities, nil
@@ -93,22 +94,22 @@ func (c *Client) do(url string) (*http.Response, error) {
 	return resp, nil
 }
 
-func (c *Client) ExchangeAuth(code string) TokenResponse {
-	req, err := http.Post(c.buildTokenURL(code), "application/json", nil)
+func (c *Client) ExchangeAuth(code string) (*TokenResponse, error) {
+	resp, err := http.Post(c.buildTokenURL(code), "application/json", nil)
 	if err != nil {
-		fmt.Println(err)
+		return nil, fmt.Errorf("failed to exchange auth token: %w", err)
 	}
-	defer req.Body.Close()
+	defer resp.Body.Close()
 
-	body, err := io.ReadAll(req.Body)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	var resp TokenResponse
-	if err := json.Unmarshal(body, &resp); err != nil {
-		fmt.Println(err)
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("failed to exchange auth token, status: %d, body: %s", resp.StatusCode, string(body))
 	}
 
-	return resp
+	var token TokenResponse
+	if err := json.NewDecoder(resp.Body).Decode(&token); err != nil {
+		return nil, fmt.Errorf("failed to decode auth token: %w", err)
+	}
+
+	return &token, nil
 }
