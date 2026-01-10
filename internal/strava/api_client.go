@@ -27,14 +27,20 @@ func NewClient(cfg *config.Config, t core.TokenProvider) *Client {
 	}
 }
 
-//func (c *Client) GetCurrentAthlete() {
-//	body, err := c.do("")
-//	if err != nil {
-//		log.Fatalln(err)
-//	}
-//	sb := string(body)
-//	log.Printf(sb)
-//}
+func (c *Client) GetCurrentAthlete() (*core.Athlete, error) {
+	resp, err := c.do("/athlete")
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch athlete: %w", err)
+	}
+	defer resp.Body.Close()
+
+	var athlete core.Athlete
+	if err := json.NewDecoder(resp.Body).Decode(&athlete); err != nil {
+		return nil, fmt.Errorf("failed to decode athlete: %w", err)
+	}
+
+	return &athlete, nil
+}
 
 func (c *Client) ListActivities(before int64, after int64) ([]core.Activity, error) {
 	resp, err := c.do(fmt.Sprintf("activities?before=%d&after=%d&per_page=10", before, after))

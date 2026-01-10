@@ -7,6 +7,7 @@ type OauthClient interface {
 
 type ApiClient interface {
 	ListActivities(before int64, after int64) ([]Activity, error)
+	GetCurrentAthlete() (Athlete, error)
 }
 
 type TokenProvider interface {

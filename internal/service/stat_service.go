@@ -14,6 +14,17 @@ func NewStatService(client core.ApiClient) *StatService {
 	return &StatService{Client: client}
 }
 
+func (s *StatService) GetAthleteSummary() (*domain.AthleteSummary, error) {
+	athlete, err := s.Client.GetCurrentAthlete()
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch athlete summary: %w", err)
+	}
+
+	// TODO
+
+	return &domain.AthleteSummary{}, nil
+}
+
 func (s *StatService) ListActivities(period domain.Period) (map[string]domain.ActivitySummary, error) {
 	activities, err := s.Client.ListActivities(period.EndDay.Unix(), period.StartDay.Unix())
 

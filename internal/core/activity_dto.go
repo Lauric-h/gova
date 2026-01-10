@@ -6,3 +6,7 @@ type Activity struct {
 	Ascent    float64 `json:"total_elevation_gain"`
 	SportType string  `json:"sport_type"`
 }
+
+type Athlete struct {
+	// TODO
+}
