@@ -48,7 +48,7 @@ func (s *AuthService) GetCredentials() (*Credentials, error) {
 	filePath := filepath.Join(homeDir, ".config", "gova", "credentials.json")
 	j, err := os.Open(filePath)
 	if j == nil || err != nil {
-		return nil, fmt.Errorf("failed to find credentials file")
+		return nil, fmt.Errorf("not authenticated: run 'gova login' first")
 	}
 	defer j.Close()
 
@@ -58,7 +58,7 @@ func (s *AuthService) GetCredentials() (*Credentials, error) {
 	}
 
 	if credentials.AccessToken == "" || credentials.RefreshToken == "" {
-		return nil, fmt.Errorf("invalid credentials file")
+		return nil, fmt.Errorf("invalid credentials: run 'gova login' again")
 	}
 
 	if credentials.ExpiresAt.Before(time.Now()) {

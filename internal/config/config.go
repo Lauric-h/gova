@@ -6,19 +6,12 @@ import (
 )
 
 type Config struct {
-	StravaToken     string
 	ClientId        string
 	ClientSecret    string
 	AuthRedirectURI string
 }
 
 func Load() (*Config, error) {
-	// TODO REMOVE
-	token := os.Getenv("STRAVA_AUTH_TOKEN")
-	if token == "" {
-		return nil, errors.New("STRAVA_AUTH_TOKEN environment variable not set")
-	}
-
 	clientId := os.Getenv("STRAVA_CLIENT_ID")
 	if clientId == "" {
 		return nil, errors.New("STRAVA_CLIENT_ID environment variable not set")
@@ -34,5 +27,5 @@ func Load() (*Config, error) {
 		return nil, errors.New("AUTH_REDIRECT_URI environment variable not set")
 	}
 
-	return &Config{token, clientId, clientSecret, redirectURI}, nil
+	return &Config{clientId, clientSecret, redirectURI}, nil
 }

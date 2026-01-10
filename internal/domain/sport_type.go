@@ -6,7 +6,7 @@ type SportType string
 
 const (
 	SportTypeTrailRun       SportType = "TrailRun"
-	SportTypeRun            SportType = "run"
+	SportTypeRun            SportType = "Run"
 	SportTypeHike           SportType = "Hike"
 	SportTypeRide           SportType = "Ride"
 	SportTypeWeightTraining SportType = "WeightTraining"
@@ -21,6 +21,6 @@ func SportTypeFromString(i string) (SportType, error) {
 	case SportTypeTrailRun, SportTypeRun, SportTypeHike, SportTypeRide, SportTypeWeightTraining:
 		return SportType(i), nil
 	default:
-		return SportType(""), errors.New("invalid SportType")
+		return "", errors.New("invalid SportType")
 	}
 }

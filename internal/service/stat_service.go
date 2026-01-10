@@ -15,7 +15,6 @@ func NewStatService(client core.ApiClient) *StatService {
 }
 
 func (s *StatService) ListActivities(period domain.Period) (map[string]domain.ActivitySummary, error) {
-	//activities, err := s.Client.ListActivities(1767552000, 1766956800)
 	activities, err := s.Client.ListActivities(period.EndDay.Unix(), period.StartDay.Unix())
 
 	if err != nil {

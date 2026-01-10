@@ -25,12 +25,13 @@ var loginCmd = &cobra.Command{
 			return fmt.Errorf("strava Auth Service is not initialized")
 		}
 
-		fmt.Println("Login called")
-		fmt.Println("Checking for config file...")
+		fmt.Println("Starting authentication with Strava...")
+		fmt.Println("Checking for existing credentials...")
 
 		// Start HTTP Server
 		loginUrl := appCtx.AuthService.BuildLoginUrl()
-		fmt.Println("Open this URL in your browser to login to Strava", loginUrl)
+		fmt.Println("\nOpen this URL in your browser to authenticate:")
+		fmt.Println(loginUrl)
 		oAuthResult, err := appCtx.AuthService.StartOAuthFlow()
 		if err != nil {
 			return err

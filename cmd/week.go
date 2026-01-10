@@ -23,7 +23,7 @@ var weekCmd = &cobra.Command{
 		}
 
 		if appCtx.StatService == nil {
-			return fmt.Errorf("application not initialized, try to login again")
+			return fmt.Errorf("application not initialized, run 'gova login' first")
 		}
 
 		shouldGetLast, err := cmd.Flags().GetBool("last")

@@ -22,8 +22,16 @@ const appCtxKey = "appCtx"
 
 var rootCmd = &cobra.Command{
 	Use:   "gova",
-	Short: "gova is a CLI tool to visualize your Strava stats",
-	Long:  "gova is a CLI tool to visualize your weekly and monthly Strava stats for running and trail running",
+	Short: "A CLI tool to visualize your Strava stats",
+	Long: `gova is a CLI tool to visualize your weekly and monthly Strava stats for running and trail running.
+
+Available commands:
+  login  - Authenticate with Strava
+  week   - Display weekly stats
+  month  - Display monthly stats
+  me     - Display profile information
+
+Run 'gova [command] --help' for more information about a command.`,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		cfg, err := config.Load()
 		if err != nil {
@@ -45,7 +53,9 @@ var rootCmd = &cobra.Command{
 
 		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {},
+	Run: func(cmd *cobra.Command, args []string) {
+		cmd.Help()
+	},
 }
 
 func Execute() {
