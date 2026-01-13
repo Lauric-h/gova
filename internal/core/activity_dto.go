@@ -8,5 +8,12 @@ type Activity struct {
 }
 
 type Athlete struct {
-	// TODO
+	Username  string `json:"username"`
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
+	City      string `json:"city"`
+	State     string `json:"state"`
+	Country   string `json:"country"`
+	Sex       string `json:"sex"`
+	Premium   bool   `json:"premium"`
 }

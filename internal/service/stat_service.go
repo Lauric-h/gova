@@ -20,9 +20,16 @@ func (s *StatService) GetAthleteSummary() (*domain.AthleteSummary, error) {
 		return nil, fmt.Errorf("failed to fetch athlete summary: %w", err)
 	}
 
-	// TODO
-
-	return &domain.AthleteSummary{}, nil
+	return &domain.AthleteSummary{
+		Username:  athlete.Username,
+		Firstname: athlete.Firstname,
+		Lastname:  athlete.Lastname,
+		City:      athlete.City,
+		State:     athlete.State,
+		Country:   athlete.Country,
+		Sex:       athlete.Sex,
+		Premium:   athlete.Premium,
+	}, nil
 }
 
 func (s *StatService) ListActivities(period domain.Period) (map[string]domain.ActivitySummary, error) {
@@ -37,7 +44,6 @@ func (s *StatService) ListActivities(period domain.Period) (map[string]domain.Ac
 	for _, act := range activities {
 		sportType, err := domain.SportTypeFromString(act.SportType)
 		if err != nil {
-			// TODO log
 			continue
 		}
 

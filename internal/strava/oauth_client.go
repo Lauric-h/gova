@@ -49,6 +49,32 @@ func (c *OauthClient) ExchangeToken(code string) (*core.TokenResponse, error) {
 	return &token, nil
 }
 
+func (c *OauthClient) RefreshToken(refreshToken string) (*core.TokenResponse, error) {
+	data := url2.Values{}
+	data.Set("client_id", c.cfg.ClientId)
+	data.Set("client_secret", c.cfg.ClientSecret)
+	data.Set("refresh_token", refreshToken)
+	data.Set("grant_type", "refresh_token")
+
+	resp, err := http.PostForm(TokenURL, data)
+	if err != nil {
+		return nil, fmt.Errorf("failed to refresh auth token: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("failed to refresh auth token, status: %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	var token core.TokenResponse
+	if err := json.NewDecoder(resp.Body).Decode(&token); err != nil {
+		return nil, fmt.Errorf("failed to decode auth token: %w", err)
+	}
+
+	return &token, nil
+}
+
 func (c *OauthClient) BuildAuthURL() string {
 	params := url2.Values{
 		"client_id":       {c.cfg.ClientId},

@@ -62,10 +62,31 @@ func (s *AuthService) GetCredentials() (*Credentials, error) {
 	}
 
 	if credentials.ExpiresAt.Before(time.Now()) {
-		// Refresh Token
+		refreshed, err := s.RefreshToken(credentials.RefreshToken)
+		if err != nil {
+			return nil, err
+		}
+		return refreshed, nil
 	}
 
 	return &credentials, nil
+}
+
+func (s *AuthService) RefreshToken(refreshToken string) (*Credentials, error) {
+	tokenResponse, err := s.oauthClient.RefreshToken(refreshToken)
+	if err != nil {
+		return nil, fmt.Errorf("failed to refresh auth token: %s", err.Error())
+	}
+
+	if err := s.storeToken(tokenResponse.AccessToken, tokenResponse.RefreshToken, tokenResponse.ExpiresAt); err != nil {
+		return nil, fmt.Errorf("failed to store token: %w", err)
+	}
+
+	return &Credentials{
+		AccessToken:  tokenResponse.AccessToken,
+		RefreshToken: tokenResponse.RefreshToken,
+		ExpiresAt:    time.Unix(tokenResponse.ExpiresAt, 0),
+	}, nil
 }
 
 func (s *AuthService) GetTokenFromCode(code string) error {
