@@ -43,7 +43,7 @@ func (c *Client) GetCurrentAthlete() (*core.Athlete, error) {
 }
 
 func (c *Client) ListActivities(before int64, after int64) ([]core.Activity, error) {
-	resp, err := c.do(fmt.Sprintf("activities?before=%d&after=%d&per_page=10", before, after))
+	resp, err := c.do(fmt.Sprintf("activities?before=%d&after=%d&per_page=100", before, after))
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch activities: %w", err)
 	}

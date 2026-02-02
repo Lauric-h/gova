@@ -168,24 +168,6 @@ gova/
 - Access and refresh tokens are managed automatically
 - Never commits `.env` file (in `.gitignore`)
 
-## Roadmap
-
-### MVP
-- [x] OAuth authentication
-- [x] Weekly stats
-- [x] Monthly stats
-- [ ] Implement refresh token logic
-- [ ] Add `logout` command
-- [ ] Remove `STRAVA_AUTH_TOKEN` dependency from config
-
-### V1
-- [ ] Filter by sport type: `gova week --sport=Run`
-- [ ] ASCII graphs/charts in terminal
-- [ ] Export to CSV/JSON
-- [ ] Unit tests (60%+ coverage)
-- [ ] CI/CD with GitHub Actions
-- [ ] Pre-built binaries for releases
-
 ---
 
 **Note**: This project is not affiliated with Strava, Inc.

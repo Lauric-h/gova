@@ -30,7 +30,9 @@ var meCmd = &cobra.Command{
 			return fmt.Errorf("failed to fetch athlete summary: %w", err)
 		}
 
-		fmt.Println(athleteSummary)
+		fmt.Printf("Username : %s\n", athleteSummary.Username)
+		fmt.Printf("%s %s\n", athleteSummary.Firstname, athleteSummary.Lastname)
+		fmt.Printf("Ville : %s %s\n", athleteSummary.City, athleteSummary.Country)
 
 		return nil
 	},

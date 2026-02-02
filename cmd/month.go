@@ -38,6 +38,11 @@ var monthCmd = &cobra.Command{
 		}
 
 		fmt.Println("Du", period.StartDay.Format("02/01/2006"), "au", period.EndDay.Format("02/01/2006"))
+		if len(activitiesSummary) == 0 {
+			fmt.Println("Pas d'activités sur cette période pour le moment")
+			return nil
+		}
+
 		for _, activity := range activitiesSummary {
 			fmt.Printf("Activité %s (%d): %.1f km, %.1fh, %dm de dénivelé positif\n",
 				activity.SportType.String(),
