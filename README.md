@@ -40,10 +40,25 @@ cd gova
 go build -o gova
 ```
 
-### Using go install
+This creates the `gova` binary in the current directory. You can then:
+- Run it directly with `./gova`
+- Or install it globally: `sudo cp gova /usr/local/bin/` (then you can use `gova` from anywhere)
+
+### Using go install (recommended)
 
 ```bash
+# From the cloned repository
+go install
+
+# Or directly from GitHub (once published)
 go install github.com/yourusername/gova@latest
+```
+
+This installs `gova` to your `$GOPATH/bin` (usually `~/go/bin`). Make sure this directory is in your PATH:
+
+```bash
+# Add to your ~/.bashrc or ~/.zshrc if not already done
+export PATH="$PATH:$HOME/go/bin"
 ```
 
 ## Configuration
@@ -70,8 +85,10 @@ cp .env.example .env
 ### 1. Authenticate with Strava
 
 ```bash
-./gova login
+gova login
 ```
+
+> **Note**: If you built with `go build -o gova` and didn't install globally, use `./gova login` instead.
 
 This will:
 1. Open your browser automatically
@@ -83,22 +100,22 @@ This will:
 
 **Current week:**
 ```bash
-./gova week
+gova week
 ```
 
 **Last week:**
 ```bash
-./gova week --last
+gova week --last
 ```
 
 **Current month:**
 ```bash
-./gova month
+gova month
 ```
 
 **Last month:**
 ```bash
-./gova month --last
+gova month --last
 ```
 
 ### Example Output
